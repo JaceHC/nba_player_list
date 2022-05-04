@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nba_player_list/playerInformation.dart';
 import 'players.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -30,12 +33,23 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   List<Player> nbaPlayers = [];
+  List<PlayerInformation> myPlayerInformation = [];
 
   _MyHomePageState() {
     nbaPlayers.add( new Player(1966,"https://www.espn.com/nba/player/_/id/1966/lebronjames","Lebron James"));
     nbaPlayers.add( new Player(3203,"https://www.espn.com/nba/player/_/id/3202/kevin-durant","Kevin Durant"));
     nbaPlayers.add( new Player(4432816,"https://www.espn.com/nba/player/_/id/4432816/lamelo-ball","Lamelo Ball"));
 
+  }
+
+
+  @override
+  void initState(){
+
+    super.initState();
+    getPlayerInformation().then((newPlayerInformation){
+      myPlayerInformation = newPlayerInformation;
+    });
   }
 
   @override
@@ -48,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Center(child: Text('"Lebron James" 1966')),
       ),
       Image (
-        image: NetworkImage("https://www.espn.com/nba/player/_/id/1966/lebronjames"),
+        image: NetworkImage("https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/1966.png"),
       ),
       Container(
         height: 50,
@@ -56,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Center(child: Text('"Kevin Durant" 3202')),
       ),
       Image (
-        image: NetworkImage("https://www.espn.com/nba/player/_/id/3202/kevin-durant"),
+        image: NetworkImage("https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/3202.png"),
       ),
       Container(
         height: 50,
@@ -64,8 +78,21 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Center(child: Text('"Lamelo Ball" 4432816')),
       ),
       Image (
-        image: NetworkImage("https://www.espn.com/nba/player/_/id/4432816/lamelo-ball"),
+        image: NetworkImage("https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/4432816.png"),
       ),
     ],
-  );
+  )
+  ;
+  Future<List<PlayerInformation>> getPlayerInformation() async{
+    Uri url = Uri.parse('https://www.balldontlie.io/api/v1/players');
+    final response = http.get(url);
+    if (response.statusCode == 200){
+      String jsonPlayerInformation = response.body;
+      List<PlayerInformation> playerInformation = playerInformationFromJson(jsonPlayerInformation);
+      return playerInformation;
+    } else{
+      print("Json_Services incorrect HTTP response code of ${response.statusCode}");
+      return List<PlayerInformation>.empty();
+    }
+  }
 }
