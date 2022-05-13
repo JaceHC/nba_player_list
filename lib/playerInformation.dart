@@ -95,19 +95,17 @@ class Team {
     "id": id,
     "abbreviation": abbreviation,
     "city": city,
-    "conference": conferenceValues.reverse[conference],
+    //"conference": conferenceValues.reverse[conference],
     "division": division,
     "full_name": fullName,
     "name": name,
   };
+
+  static fromJson(json) {}
 }
 
 enum Conference { EAST, WEST }
 
-final conferenceValues = EnumValues({
-  "East": Conference.EAST,
-  "West": Conference.WEST
-});
 
 class Meta {
   Meta({
@@ -141,16 +139,3 @@ class Meta {
   };
 }
 
-class EnumValues<T> {
-  Map<String, T> map;
-  Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    if (reverseMap == null) {
-      reverseMap = map.map((k, v) => new MapEntry(v, k));
-    }
-    return reverseMap;
-  }
-}
